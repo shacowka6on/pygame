@@ -1,46 +1,49 @@
 import pygame
+import settings
 import spritesheet
 
 pygame.init()
 
 clock = pygame.time.Clock()
 
-sprite_sheet_image = pygame.image.load('assets/blastalot-wings-alpha.png').convert_alpha()
+sprite_sheet_image = pygame.image.load('pygame/assets/blastalot-wings-alpha.png').convert_alpha()
 sprite_sheet = spritesheet.SpriteSheet(sprite_sheet_image)
 
 animation_list = []
 animation_steps = [1,1,1,6] #idle,jump,fall,run1-6
-action = 3
+action = 0
 last_update = pygame.time.get_ticks()
 animation_cooldown = 100
 step_counter = 0
 frame = 0
 
 
-frame_width = 44
-frame_height = 44
-scale = 2
-
 for animation in animation_steps:
     temp_img_list = []
     for i in range(animation):
-        x = step_counter * frame_width
+        x = step_counter * settings.FRAME_WIDTH
         y = 0 
-        temp_img_list.append(sprite_sheet.get_image(x,y,frame_width,frame_height,scale))
+        temp_img_list.append(sprite_sheet.get_image(x,y,settings.FRAME_WIDTH,settings.FRAME_HEIGHT,settings.SCALE))
         step_counter += 1
     animation_list.append(temp_img_list)
 
-running = True
+GAME_RUNNING = True
 dt = 0
 player_pos = pygame.Vector2(100, 600)
 facing_right = True
 
-while running:
+jumping = False
+Y_GRAVITY = 1.1
+JUMP_HEIGHT = 20
+Y_VELOCITY = JUMP_HEIGHT
+
+
+while GAME_RUNNING:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            running = False
+            GAME_RUNNING = False
 
-    screen.fill(BACKGROUND_COLOR)
+    settings.screen.fill(settings.BACKGROUND_COLOR)
 
     current_time = pygame.time.get_ticks()
     if current_time - last_update >= animation_cooldown:
@@ -49,9 +52,7 @@ while running:
             frame = 0
         last_update = current_time
 
-
-    # RENDER YOUR GAME HERE
-    # pygame.draw.circle(screen, "cyan", player_pos, 30)
+    #-------Physics--------
     keys = pygame.key.get_pressed()
     if keys[pygame.K_a]:
         player_pos.x -= 250 * dt
@@ -59,8 +60,23 @@ while running:
     if keys[pygame.K_d]:
         player_pos.x += 250 * dt
         facing_right = True
+    if keys[pygame.K_SPACE] and not jumping:
+        jumping = True
 
-    if keys[pygame.K_a] or keys[pygame.K_d]:
+    if jumping:
+        player_pos.y -= Y_VELOCITY
+        Y_VELOCITY -= Y_GRAVITY
+        if Y_VELOCITY < -JUMP_HEIGHT:
+            jumping = False
+            Y_VELOCITY = JUMP_HEIGHT
+
+    #-------Handles animation------- 
+    if jumping:
+        if Y_VELOCITY > 0:
+            action = 1
+        else:
+            action = 2
+    elif keys[pygame.K_a] or keys[pygame.K_d]:
         action = 3
     else:
         action = 0
@@ -71,7 +87,9 @@ while running:
         frame_img = pygame.transform.flip(frame_img, True, False)
 
     frame_rect = frame_img.get_rect(center=player_pos)
-    screen.blit(frame_img,frame_rect)
+    settings.screen.blit(frame_img,frame_rect)
+
+    #-----End of animation code------
 
     pygame.display.flip()
 
