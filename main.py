@@ -1,98 +1,56 @@
 import pygame
+from player import Player
 import settings
-import spritesheet
 
 pygame.init()
+pygame.font.init()
 
-clock = pygame.time.Clock()
+class Game:
+    def __init__(self):
+        self.clock = pygame.time.Clock()
+        self.running = True
+        self.dt = 0
+        self.player = Player(100, settings.FLOOR)
+        self.font = pygame.font.SysFont("Calibri", 30)
 
-sprite_sheet_image = pygame.image.load('pygame/assets/blastalot-wings-alpha.png').convert_alpha()
-sprite_sheet = spritesheet.SpriteSheet(sprite_sheet_image)
+    def update_fps(self):
+        fps = str(int(self.clock.get_fps()))
+        fps_text = self.font.render(fps, False, ("coral"))
+        return fps_text
+        
+    def handle_events(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.running = False
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_x, mouse_y = pygame.mouse.get_pos()
+                self.player.handle_shoot_input(mouse_x, mouse_y)
+    
+    def update(self):
+        keys = pygame.key.get_pressed()
+        self.player.handle_movement_input(keys, self.dt)
+        self.player.update()
+    
+    def draw(self):
+        settings.screen.fill(settings.BACKGROUND_COLOR)
+        
+        self.player.draw(settings.screen)
+        
+        mouse_x, mouse_y = pygame.mouse.get_pos()
+        text_surface = self.font.render(f"{mouse_x}, {mouse_y}", False, (0, 0, 0))
+        settings.screen.blit(text_surface, (mouse_x + 20, mouse_y))
+        settings.screen.blit(self.update_fps(), (10,0))
 
-animation_list = []
-animation_steps = [1,1,1,6] #idle,jump,fall,run1-6
-action = 0
-last_update = pygame.time.get_ticks()
-animation_cooldown = 100
-step_counter = 0
-frame = 0
+        pygame.display.flip()
+    
+    def run(self):
+        while self.running:
+            self.handle_events()
+            self.update()
+            self.draw()
+            self.dt = self.clock.tick(60) / 1000
 
-
-for animation in animation_steps:
-    temp_img_list = []
-    for i in range(animation):
-        x = step_counter * settings.FRAME_WIDTH
-        y = 0 
-        temp_img_list.append(sprite_sheet.get_image(x,y,settings.FRAME_WIDTH,settings.FRAME_HEIGHT,settings.SCALE))
-        step_counter += 1
-    animation_list.append(temp_img_list)
-
-GAME_RUNNING = True
-dt = 0
-player_pos = pygame.Vector2(100, 600)
-facing_right = True
-
-jumping = False
-Y_GRAVITY = 1.1
-JUMP_HEIGHT = 20
-Y_VELOCITY = JUMP_HEIGHT
-
-
-while GAME_RUNNING:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            GAME_RUNNING = False
-
-    settings.screen.fill(settings.BACKGROUND_COLOR)
-
-    current_time = pygame.time.get_ticks()
-    if current_time - last_update >= animation_cooldown:
-        frame += 1
-        if frame >= len(animation_list[action]):
-            frame = 0
-        last_update = current_time
-
-    #-------Physics--------
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_a]:
-        player_pos.x -= 250 * dt
-        facing_right = False
-    if keys[pygame.K_d]:
-        player_pos.x += 250 * dt
-        facing_right = True
-    if keys[pygame.K_SPACE] and not jumping:
-        jumping = True
-
-    if jumping:
-        player_pos.y -= Y_VELOCITY
-        Y_VELOCITY -= Y_GRAVITY
-        if Y_VELOCITY < -JUMP_HEIGHT:
-            jumping = False
-            Y_VELOCITY = JUMP_HEIGHT
-
-    #-------Handles animation------- 
-    if jumping:
-        if Y_VELOCITY > 0:
-            action = 1
-        else:
-            action = 2
-    elif keys[pygame.K_a] or keys[pygame.K_d]:
-        action = 3
-    else:
-        action = 0
-
-    frame = min(frame, len(animation_list[action]) - 1)
-    frame_img = animation_list[action][frame]
-    if not facing_right:
-        frame_img = pygame.transform.flip(frame_img, True, False)
-
-    frame_rect = frame_img.get_rect(center=player_pos)
-    settings.screen.blit(frame_img,frame_rect)
-
-    #-----End of animation code------
-
-    pygame.display.flip()
-
-    dt = clock.tick(60) / 1000  
-
-pygame.quit()
+if __name__ == "__main__":
+    game = Game()
+    game.run()
+    pygame.quit()
