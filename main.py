@@ -1,5 +1,7 @@
 import pygame
 from player import Player
+from enemy import Enemy
+from platform import Platform
 import settings
 
 pygame.init()
@@ -12,6 +14,18 @@ class Game:
         self.dt = 0
         self.player = Player(100, settings.FLOOR)
         self.font = pygame.font.SysFont("Calibri", 30)
+        self.platforms = [
+            #        x   y   w   h
+            Platform(100,100,300,64), #level 1 depth
+            Platform(100,300,400,128), #level 2 depth
+            Platform(100,500,500,192), #level 3 depth
+            
+        ]
+        # self.enemies = [
+        #     Enemy(200, 300, "basic"),
+        #     Enemy(500, 200, "fast"),
+        #     Enemy(600, 400, "basic")
+        # ]
 
     def update_fps(self):
         fps = str(int(self.clock.get_fps()))
@@ -35,9 +49,12 @@ class Game:
         settings.screen.fill(settings.BACKGROUND_COLOR)
         
         self.player.draw(settings.screen)
+
+        for platform in self.platforms:
+            platform.draw(settings.screen)
         
         mouse_x, mouse_y = pygame.mouse.get_pos()
-        text_surface = self.font.render(f"{mouse_x}, {mouse_y}", False, (0, 0, 0))
+        text_surface = self.font.render(f"{mouse_x}, {mouse_y}", False, "cyan")
         settings.screen.blit(text_surface, (mouse_x + 20, mouse_y))
         settings.screen.blit(self.update_fps(), (10,0))
 
