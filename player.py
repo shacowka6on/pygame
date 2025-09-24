@@ -9,7 +9,9 @@ class Player:
         self.velocity = pygame.Vector2(0, 0)
         self.facing_right = True
         self.jumping = False
+        self.is_grounded = True
         self.bullets = []
+        self.rect = pygame.Rect(x,y,40,40)
         
         self.last_animation_update = 0
         self.last_attack = 0
@@ -43,9 +45,11 @@ class Player:
         if keys[pygame.K_a]:
             self.velocity.x = -MOVE_SPEED * dt
             self.facing_right = False
+            self.check_for_ground()
         if keys[pygame.K_d]:
             self.velocity.x = MOVE_SPEED * dt
             self.facing_right = True
+            self.check_for_ground()
             
         if keys[pygame.K_SPACE] and not self.jumping:
             self.jump()
@@ -53,6 +57,9 @@ class Player:
         self.pos.x += self.velocity.x
         self.pos.y += self.velocity.y
         
+        self.rect.x = self.pos.x
+        self.rect.y = self.pos.y
+
         if self.jumping:
             self.velocity.y += GRAVITY
             if self.pos.y >= FLOOR: 
@@ -64,6 +71,11 @@ class Player:
         if not self.jumping:
             self.jumping = True
             self.velocity.y = -JUMP_FORCE
+    
+    def check_for_ground(self):
+        if not self.is_grounded:
+            self.velocity.y += GRAVITY
+
     
     def handle_shoot_input(self, target_x, target_y):
         current_time = pygame.time.get_ticks()
@@ -118,5 +130,7 @@ class Player:
         if not self.facing_right:
             frame_img = pygame.transform.flip(frame_img, True, False)
         
-        frame_rect = frame_img.get_rect(center=(self.pos.x, self.pos.y))
+        frame_rect = frame_img.get_rect(center=(self.pos.x + 20, self.pos.y))
         screen.blit(frame_img, frame_rect)
+
+        # pygame.draw.rect(screen, (0,255,0), self.rect, 2) debugging tool

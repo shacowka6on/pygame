@@ -1,7 +1,7 @@
 import pygame
 from player import Player
 from enemy import Enemy
-from platform import Platform
+from platform import Platform 
 import settings
 
 pygame.init()
@@ -16,9 +16,9 @@ class Game:
         self.font = pygame.font.SysFont("Calibri", 30)
         self.platforms = [
             #        x   y   w   h
-            Platform(100,100,300,64), #level 1 depth
-            Platform(100,300,400,128), #level 2 depth
-            Platform(100,500,500,192), #level 3 depth
+            Platform(150,600,128,64), #level 1 depth
+            # Platform(100,300,400,128),
+            Platform(10,680,1280, 20),
             
         ]
         # self.enemies = [
@@ -43,15 +43,23 @@ class Game:
     def update(self):
         keys = pygame.key.get_pressed()
         self.player.handle_movement_input(keys, self.dt)
+        self.player.is_grounded = False
+        for platform in self.platforms:
+            if platform.check_collision(self.player.rect):
+                is_grounded = platform.handle_collision(self.player, self.player.rect)
+                if is_grounded:
+                    self.player.is_grounded = True
+                    self.player.jumping = False
+
         self.player.update()
     
     def draw(self):
         settings.screen.fill(settings.BACKGROUND_COLOR)
         
-        self.player.draw(settings.screen)
-
         for platform in self.platforms:
             platform.draw(settings.screen)
+
+        self.player.draw(settings.screen)
         
         mouse_x, mouse_y = pygame.mouse.get_pos()
         text_surface = self.font.render(f"{mouse_x}, {mouse_y}", False, "cyan")
