@@ -29,7 +29,7 @@ class Game:
 
     def update_fps(self):
         fps = str(int(self.clock.get_fps()))
-        fps_text = self.font.render(fps, False, ("coral"))
+        fps_text = self.font.render(fps, False, ("green"))
         return fps_text
         
     def handle_events(self):
@@ -60,11 +60,13 @@ class Game:
             platform.draw(settings.screen)
 
         self.player.draw(settings.screen)
+        self.player.draw_player_health(settings.screen)
+
         
         mouse_x, mouse_y = pygame.mouse.get_pos()
         text_surface = self.font.render(f"{mouse_x}, {mouse_y}", False, "cyan")
         settings.screen.blit(text_surface, (mouse_x + 20, mouse_y))
-        settings.screen.blit(self.update_fps(), (10,0))
+        settings.screen.blit(self.update_fps(), (settings.WIDTH - 50,0))
 
         pygame.display.flip()
     

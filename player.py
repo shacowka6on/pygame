@@ -7,11 +7,12 @@ class Player:
     def __init__(self, x, y):
         self.pos = pygame.Vector2(x, y)
         self.velocity = pygame.Vector2(0, 0)
+        self.health = 100
         self.facing_right = True
         self.jumping = False
         self.is_grounded = True
         self.bullets = []
-        self.rect = pygame.Rect(x,y,40,40)
+        self.rect = pygame.Rect(x,y,35,60)
         
         self.last_animation_update = 0
         self.last_attack = 0
@@ -22,6 +23,12 @@ class Player:
         self.sprite_sheet = SpriteSheet(self.sprite_sheet_image)
         self.animation_list = self.load_animations()
     
+    def draw_player_health(self, screen):
+        font = pygame.font.SysFont("Calibri", 30)
+        text = font.render(f"Health: {self.health}", False, "Red")
+        screen.blit(text, (10,0))
+
+
     def load_animations(self):
         animation_list = []
         animation_steps = [1, 1, 1, 6]  # idle, jump, fall, run
@@ -130,7 +137,7 @@ class Player:
         if not self.facing_right:
             frame_img = pygame.transform.flip(frame_img, True, False)
         
-        frame_rect = frame_img.get_rect(center=(self.pos.x + 20, self.pos.y))
+        frame_rect = frame_img.get_rect(center=(self.pos.x + 20, self.pos.y + 20))
         screen.blit(frame_img, frame_rect)
 
-        # pygame.draw.rect(screen, (0,255,0), self.rect, 2) debugging tool
+        # pygame.draw.rect(screen, (0,255,0), self.rect, 2) #debugging tool

@@ -14,6 +14,7 @@ class Platform:
         self.width = self.tiles_x * self.tile_width
         self.height = self.tiles_y * self.tile_height
         self.rect = pygame.Rect(x,y,self.width,self.height)
+        self.rect = pygame.Rect.inflate(self.rect,-30,-20)
        
         self.platform_surface = pygame.Surface((self.tiles_x * self.tile_width, self.tiles_y * self.tile_height), pygame.SRCALPHA)
         self.create_tiled_surface()
@@ -48,7 +49,7 @@ class Platform:
     
     def handle_collision(self, player, player_rect):
         direction = self.get_collision_direction(player_rect)
-        print(f"Player coords: {player.rect.x, player.rect.y} collision direction {direction}")
+        # print(f"Player coords: {player.rect.x, player.rect.y} collision direction {direction}")
         if direction == "top":
             player_rect.bottom = self.rect.top
             player.pos.y = player_rect.y
@@ -99,5 +100,5 @@ class Platform:
             
     def draw(self,screen):
         screen.blit(self.platform_surface, (self.x, self.y))
-        # pygame.draw.rect(screen, (255,0,0), self.rect, 2) debugging tool
+        # pygame.draw.rect(screen, (255,0,0), self.rect, 2) #debugging tool
         
