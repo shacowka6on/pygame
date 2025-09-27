@@ -1,43 +1,65 @@
 import random
 import pygame
-from settings import BULLET_DAMAGE, ENEMY_ATTACK_COOLDOWN, ENEMY_ATTACK_RANGE, ENEMY_DETECTION_RANGE, ENEMY_HEALTH, ENEMY_SPEED, WIDTH
+from settings import BULLET_DAMAGE, ENEMY_ATTACK_COOLDOWN, ENEMY_ATTACK_RANGE, ENEMY_DETECTION_RANGE, ENEMY_HEALTH, ENEMY_SPEED, WIDTH, HEIGHT, GRAVITY, FLOOR
 
 class Enemy:
-    def __init__(self,x,y):
+    def __init__(self, x, y):
         self.pos = pygame.Vector2(x, y)
-        self.velocity = pygame.Vector2(0,0)
+        self.velocity = pygame.Vector2(0, 0)
+        self.rect = pygame.Rect(x, y, 30, 30)
         self.health = ENEMY_HEALTH
-        self.state = "WANDER"
+        self.state = "CHASE"
         self.wander_timer = 0
         self.detection_radius = ENEMY_DETECTION_RANGE
         self.attack_radius = ENEMY_ATTACK_RANGE
         self.attack_cooldown = ENEMY_ATTACK_COOLDOWN
         self.speed = ENEMY_SPEED
+        self.jumping = False
+        self.is_grounded = False
+        self.wander_direction = pygame.Vector2(random.choice([-1, 1]), 0)
     
-    def chase_player(self,player):
-        direction = (player.pos - self.pos).normalize()
-        self.velocity = direction * self.speed
-    #wander when player is far away 
-    def wander(self, dt):
-        self.wander_timer += dt * 1000
-        if self.wander_timer > random.randint(2000,4000):
-            self.wander_direction = pygame.Vector2(
-                random.choice([-1,0,1]),
-                random.choice([-1,0,1])
-            ).normalize()
-            self.wander_timer = 0
-        self.velocity = self.wander_direction * (self.speed * 0.5)
-    #attack player
-    # def attack(self):
-    #     if cooldown_ready():
-    # def boundaries(self):
-    #     self.pos.x = max(50, min(self.pos.x, WIDTH))
-    # #taking damage from player
-    # def hurt(self):
-    #     #TO DO: implement collision method
-    #     if collision(player, self):
-    #         self.health -= BULLET_DAMAGE
+    def apply_gravity(self, dt):
+        if not self.is_grounded:
+            self.velocity.y += GRAVITY * dt
+            
+        if self.pos.y >= FLOOR - self.rect.height:
+            self.pos.y = FLOOR - self.rect.height
+            self.is_grounded = True
+            self.jumping = False
+            self.velocity.y = 0
 
-    # def draw(self, screen):
+        self.pos.y += GRAVITY * dt
+        # print(f"{self.rect.x}{self.rect.y}")
+        
+
+    def handle_platform_collisions(self,platforms):
+        self.is_grounded = False
+
+    def chase_player(self,player,platforms,dt):
+        direction_x = (player.pos.x - self.pos.x)
+        if abs(direction_x) > 10:
+            direction = direction_x / abs(direction_x)
+            self.velocity.x = direction * self.speed
+        else:
+            self.velocity.x = 0
+
+        self.apply_gravity(dt)
+        self.handle_platform_collisions(platforms)
+
+    def update(self, player, platforms, dt):
+        distance_to_player = (player.pos - self.pos).length()
+        if distance_to_player <= 1280:
+            self.state = "CHASE"
+            self.chase_player(player,platforms,dt)
+        self.pos.x = max(0, min(self.pos.x, WIDTH - self.rect.width))
+        self.rect.x = self.pos.x
 
     
+    
+    def draw(self, screen):
+        # Draw enemy as red square
+        pygame.draw.rect(screen, (255, 0, 0), self.rect)
+        
+        # Optional: Draw state indicator
+        state_color = (255, 255, 0) if self.state == "CHASE" else (0, 255, 0)
+        pygame.draw.circle(screen, state_color, (int(self.pos.x + 15), int(self.pos.y - 10)), 5)

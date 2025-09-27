@@ -16,16 +16,14 @@ class Game:
         self.font = pygame.font.SysFont("Calibri", 30)
         self.platforms = [
             #        x   y   w   h
-            Platform(150,600,128,64), #level 1 depth
+            Platform(700,600,128,64), #level 1 depth
             # Platform(100,300,400,128),
             Platform(10,680,1280, 20),
             
         ]
-        # self.enemies = [
-        #     Enemy(200, 300, "basic"),
-        #     Enemy(500, 200, "fast"),
-        #     Enemy(600, 400, "basic")
-        # ]
+        self.enemies = [
+            Enemy(200, 300)
+        ]
 
     def update_fps(self):
         fps = str(int(self.clock.get_fps()))
@@ -44,12 +42,16 @@ class Game:
         keys = pygame.key.get_pressed()
         self.player.handle_movement_input(keys, self.dt)
         self.player.is_grounded = False
+
         for platform in self.platforms:
             if platform.check_collision(self.player.rect):
                 is_grounded = platform.handle_collision(self.player, self.player.rect)
                 if is_grounded:
                     self.player.is_grounded = True
                     self.player.jumping = False
+
+            for enemy in self.enemies:
+                enemy.update(self.player, self.platforms, self.dt)
 
         self.player.update()
     
@@ -62,6 +64,8 @@ class Game:
         self.player.draw(settings.screen)
         self.player.draw_player_health(settings.screen)
 
+        for enemy in self.enemies:
+            enemy.draw(settings.screen)
         
         mouse_x, mouse_y = pygame.mouse.get_pos()
         text_surface = self.font.render(f"{mouse_x}, {mouse_y}", False, "cyan")

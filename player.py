@@ -10,6 +10,8 @@ class Player:
         self.health = 100
         self.facing_right = True
         self.jumping = False
+        self.last_jump_time = 0
+        self.jumping_cooldown = 500
         self.is_grounded = True
         self.bullets = []
         self.rect = pygame.Rect(x,y,35,60)
@@ -48,6 +50,7 @@ class Player:
         return animation_list
     
     def handle_movement_input(self, keys, dt):
+        current_time = pygame.time.get_ticks()
         self.velocity.x = 0
         if keys[pygame.K_a]:
             self.velocity.x = -MOVE_SPEED * dt
@@ -57,9 +60,8 @@ class Player:
             self.velocity.x = MOVE_SPEED * dt
             self.facing_right = True
             self.check_for_ground()
-            
         if keys[pygame.K_SPACE] and not self.jumping:
-            self.jump()
+            self.jump(keys)
             
         self.pos.x += self.velocity.x
         self.pos.y += self.velocity.y
@@ -73,11 +75,26 @@ class Player:
                 self.pos.y = FLOOR
                 self.jumping = False
                 self.velocity.y = 0
+            # print(f"{self.jumping}: vely:{self.velocity.y} | posy:{self.pos.y} | ")
+            
     
-    def jump(self):
+    def jump(self, keys):
+        current_time = pygame.time.get_ticks()
+
+        if current_time - self.last_jump_time < self.jumping_cooldown:
+            return False
+         
+        boost = 0
+        if keys[pygame.K_a] or keys[pygame.K_d]:
+            boost = -5
+
         if not self.jumping:
+            self.last_jump_time = current_time
             self.jumping = True
-            self.velocity.y = -JUMP_FORCE
+            self.velocity.y = -JUMP_FORCE + boost
+            return True
+        
+        return False
     
     def check_for_ground(self):
         if not self.is_grounded:
