@@ -50,7 +50,6 @@ class Player:
         return animation_list
     
     def handle_movement_input(self, keys, dt):
-        current_time = pygame.time.get_ticks()
         self.velocity.x = 0
         if keys[pygame.K_a]:
             self.velocity.x = -MOVE_SPEED * dt
@@ -104,7 +103,8 @@ class Player:
     def handle_shoot_input(self, target_x, target_y):
         current_time = pygame.time.get_ticks()
         if current_time - self.last_attack >= SHOOT_COOLDOWN:
-            bullet = Bullet(self.pos.x, self.pos.y, target_x, target_y)
+            #bullets spawn from the top of the player so i added +30 on y position 
+            bullet = Bullet(self.pos.x, self.pos.y + 30, target_x, target_y)
             self.bullets.append(bullet)
             self.last_attack = current_time
     

@@ -4,6 +4,7 @@ from settings import *
 class Bullet:
     def __init__(self, x, y, target_x, target_y):
         self.pos = pygame.Vector2(x, y)
+        self.rect = pygame.Rect(x,y,10,10)
         direction = pygame.Vector2(target_x - x, target_y - y).normalize()
         self.velocity = direction * BULLET_SPEED
 
@@ -21,7 +22,12 @@ class Bullet:
         self.pos += self.velocity
         if hasattr(self, 'rect'):
             self.rect.center = (int(self.pos.x), int(self.pos.y))
+
+    def check_bullet_collision(self, enemy_rect):
+        return self.rect.colliderect(enemy_rect)
     
     def draw(self, screen):
         if hasattr(self, 'image') and self.image:
             screen.blit(self.image, self.rect)
+        pygame.draw.rect(screen, (0,0,255), self.rect, 2) #debugging tool
+        

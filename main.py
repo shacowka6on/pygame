@@ -28,7 +28,29 @@ class Game:
         fps = str(int(self.clock.get_fps()))
         fps_text = self.font.render(fps, False, ("green"))
         return fps_text
-        
+    
+    def handle_bullet_collisions(self):
+        bullets_to_remove = []
+        enemies_to_remove = []
+
+        for bullet in self.player.bullets[:]:
+            for enemy in self.enemies[:]:
+                if bullet.rect.colliderect(enemy.rect):
+                    enemy_died = enemy.take_damage()
+                    bullets_to_remove.append(bullet)
+
+                    if enemy_died:
+                        enemies_to_remove.append(enemy)
+                    break
+
+        for bullet in bullets_to_remove:
+            if bullet in self.player.bullets:
+                self.player.bullets.remove(bullet)
+
+        for enemy in enemies_to_remove:
+            if enemy in self.enemies:
+                self.enemies.remove(enemy)
+    
     def handle_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -55,8 +77,9 @@ class Game:
                     if is_grounded:
                         enemy.is_grounded = True
                         enemy.jumping = False
-                enemy.update(self.player, self.platforms, self.dt)
+                enemy.update(self.player)
 
+        self.handle_bullet_collisions()
         self.player.update()
     
     def draw(self):
