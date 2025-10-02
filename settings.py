@@ -7,7 +7,7 @@ BACKGROUND_COLOR = (50, 50, 50)
 
 #Enviornment 
 GRAVITY = 0.8
-FLOOR = HEIGHT * 0.9 
+FLOOR = HEIGHT - 50
 
 # Player settings
 MOVE_SPEED = 250

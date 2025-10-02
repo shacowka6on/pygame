@@ -157,4 +157,4 @@ class Player:
         frame_rect = frame_img.get_rect(center=(self.pos.x + 20, self.pos.y + 20))
         screen.blit(frame_img, frame_rect)
 
-        # pygame.draw.rect(screen, (0,255,0), self.rect, 2) #debugging tool
+        pygame.draw.rect(screen, (0,255,0), self.rect, 2) #debugging tool

@@ -6,7 +6,7 @@ class Enemy:
     def __init__(self, x, y):
         self.pos = pygame.Vector2(x, y)
         self.velocity = pygame.Vector2(0, 0)
-        self.rect = pygame.Rect(x, y, 30, 30)
+        self.rect = pygame.Rect(x, y, 30, 50)
         self.health = ENEMY_HEALTH
         self.state = "CHASE"
         self.wander_timer = 0
@@ -22,8 +22,8 @@ class Enemy:
         if not self.is_grounded:
             self.velocity.y += GRAVITY * dt
             
-        if self.pos.y >= FLOOR - self.rect.height:
-            self.pos.y = FLOOR - self.rect.height
+        if self.pos.y >= FLOOR:
+            self.pos.y = FLOOR
             self.is_grounded = True
             self.jumping = False
             self.velocity.y = 0
@@ -47,19 +47,22 @@ class Enemy:
         self.handle_platform_collisions(platforms)
 
     def update(self, player, platforms, dt):
+        self.apply_gravity(1)
         distance_to_player = (player.pos - self.pos).length()
         if distance_to_player <= 1280:
             self.state = "CHASE"
             self.chase_player(player,platforms,dt)
         self.pos.x = max(0, min(self.pos.x, WIDTH - self.rect.width))
         self.rect.x = self.pos.x
+        self.rect.y = self.pos.y
 
     
     
     def draw(self, screen):
         # Draw enemy as red square
-        pygame.draw.rect(screen, (255, 0, 0), self.rect)
+        pygame.draw.rect(screen, (0, 0, 255), self.rect)
         
+        pygame.draw.rect(screen, (255,0,0), self.rect, 2) #debugging tool
         # Optional: Draw state indicator
-        state_color = (255, 255, 0) if self.state == "CHASE" else (0, 255, 0)
-        pygame.draw.circle(screen, state_color, (int(self.pos.x + 15), int(self.pos.y - 10)), 5)
+        # state_color = (255, 255, 0) if self.state == "CHASE" else (0, 255, 0)
+        # pygame.draw.circle(screen, state_color, (int(self.pos.x + 15), int(self.pos.y - 10)), 5)

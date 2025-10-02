@@ -17,12 +17,11 @@ class Game:
         self.platforms = [
             #        x   y   w   h
             Platform(700,600,128,64), #level 1 depth
-            # Platform(100,300,400,128),
-            Platform(10,680,1280, 20),
+            Platform(0,settings.FLOOR,settings.WIDTH, 20), #main bottom platform
             
         ]
         self.enemies = [
-            Enemy(200, 300)
+            Enemy(200, 500)
         ]
 
     def update_fps(self):
@@ -51,6 +50,11 @@ class Game:
                     self.player.jumping = False
 
             for enemy in self.enemies:
+                if platform.check_collision(enemy):
+                    is_grounded = platform.handle_collision(enemy, enemy.rect)
+                    if is_grounded:
+                        enemy.is_grounded = True
+                        enemy.jumping = False
                 enemy.update(self.player, self.platforms, self.dt)
 
         self.player.update()
