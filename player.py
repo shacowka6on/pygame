@@ -25,10 +25,11 @@ class Player:
         self.sprite_sheet = SpriteSheet(self.sprite_sheet_image)
         self.animation_list = self.load_animations()
     
-    def draw_player_health(self, screen):
+    def draw_player_health(self):
         font = pygame.font.SysFont("Calibri", 30)
         text = font.render(f"Health: {self.health}", False, "Red")
-        screen.blit(text, (10,0))
+        # screen.blit(text, (10,0))
+        return text
 
 
     def load_animations(self):
@@ -160,5 +161,7 @@ class Player:
         
         frame_rect = frame_img.get_rect(center=(self.pos.x + 20, self.pos.y + 20))
         screen.blit(frame_img, frame_rect)
+
+        screen.blit(self.draw_player_health(), (10,0))
 
         pygame.draw.rect(screen, (0,255,0), self.rect, 2) #debugging tool

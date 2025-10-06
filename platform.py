@@ -5,6 +5,8 @@ class Platform:
         self.x = x
         self.y = y
 
+        self.original_height = h
+
         self.tile_images = self.load_platform_images()
         self.tile_width, self.tile_height = self.tile_images[0].get_size()
         
@@ -70,33 +72,42 @@ class Platform:
 
     def load_platform_images(self):
         tile_images = []
-        for i in range (1,10):
+        for i in range (1,13):
             img = pygame.image.load(f"pygame/assets/platform/tile{i}.png").convert_alpha()
             tile_images.append(img)
         return tile_images
     
-    def draw_tiles(self, x, levelOfDepth):
+    def draw_tiles(self, x, depthLevel):
         if x == 0:
-            tile_index = 0 + levelOfDepth
+            tile_index = 0 + depthLevel #check if its the first, draw first tile
         elif x == (self.tiles_x - 1):
-            tile_index = 2 + levelOfDepth
+            tile_index = 2 + depthLevel #check if its the last, draw last tile
         else:
-            tile_index = 1 + levelOfDepth
+            tile_index = 1 + depthLevel #repeating middle tile
         return tile_index
 
     def create_tiled_surface(self):
-        for y in range (self.tiles_y):
-            for x in range (self.tiles_x):
-                if y == 0:
-                    levelOfDepth = 0
-                elif y == self.tiles_y - 1:
-                    levelOfDepth = 6
-                else:
-                    levelOfDepth = 3
+        # if self.original_height <= 64:
+        #     print("Entered here")
 
-                tile_index = self.draw_tiles(x, levelOfDepth)
-
-                self.platform_surface.blit(self.tile_images[tile_index], (x * self.tile_width, y * self.tile_height))
+        #     for x in range(self.tiles_x):
+        #         tile_index = self.draw_tiles(x, 9)
+        #         self.platform_surface.blit(self.tile_images[tile_index], (x * self.tile_width, self.tile_height))
+        #         print(tile_index)
+        # else:
+            for y in range (self.tiles_y):
+                for x in range (self.tiles_x):
+                    if self.original_height > 64:
+                        if y == 0:
+                            depthLevel = 3
+                        elif y == self.tiles_y - 1:
+                            depthLevel = 9
+                        else:
+                            depthLevel = 6
+                    else:
+                        depthLevel = 0
+                    tile_index = self.draw_tiles(x, depthLevel)
+                    self.platform_surface.blit(self.tile_images[tile_index], (x * self.tile_width, y * self.tile_height))
             
     def draw(self,screen):
         screen.blit(self.platform_surface, (self.x, self.y))

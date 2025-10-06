@@ -17,7 +17,8 @@ class Game:
         self.platforms = [
             #        x   y   w   h
             Platform(700,600,128,64), #level 1 depth
-            Platform(0,settings.FLOOR,settings.WIDTH, 20), #main bottom platform
+            Platform(300,300,200,300),
+            Platform(0,settings.FLOOR,settings.WIDTH, 130), #main bottom platform
             
         ]
         self.enemies = [
@@ -92,13 +93,13 @@ class Game:
         self.player.update()
     
     def draw(self):
-        settings.screen.fill(settings.BACKGROUND_COLOR)
+        settings.screen.fill(settings.BACKGROUND_COLOR)  
+        settings.screen.blit(settings.BACKGROUND_IMG, (0,0))
         
         for platform in self.platforms:
             platform.draw(settings.screen)
 
         self.player.draw(settings.screen)
-        self.player.draw_player_health(settings.screen)
 
         for enemy in self.enemies:
             enemy.draw(settings.screen)
