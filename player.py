@@ -82,7 +82,8 @@ class Player:
 
         if current_time - self.last_jump_time < self.jumping_cooldown:
             return False
-         
+        
+        #if player is moving give him a boost or the jump is shorter
         boost = 0
         if keys[pygame.K_a] or keys[pygame.K_d]:
             boost = -5
@@ -99,6 +100,9 @@ class Player:
         if not self.is_grounded:
             self.velocity.y += GRAVITY
 
+    def take_damage(self):
+        self.health -= ENEMY_DAMAGE
+        return self.health <= 0
     
     def handle_shoot_input(self, target_x, target_y):
         current_time = pygame.time.get_ticks()

@@ -23,6 +23,7 @@ class Game:
         self.enemies = [
             Enemy(200, 500)
         ]
+        self.enemy_last_attack = {id(enemy): 0 for enemy in self.enemies}  # Track cooldown per enemy
 
     def update_fps(self):
         fps = str(int(self.clock.get_fps()))
@@ -50,7 +51,13 @@ class Game:
         for enemy in enemies_to_remove:
             if enemy in self.enemies:
                 self.enemies.remove(enemy)
-    
+                
+    def handle_enemy_collide_w_player(self):
+        current_time = pygame.time.get_ticks()
+        for enemy in self.enemies:
+            if enemy.rect.colliderect(self.player.rect):
+                enemy.attack_player(current_time, self.player)
+                    
     def handle_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -71,14 +78,16 @@ class Game:
                     self.player.is_grounded = True
                     self.player.jumping = False
 
-            for enemy in self.enemies:
-                if platform.check_collision(enemy):
+        for enemy in self.enemies:
+            for platform in self.platforms:
+                if platform.check_collision(enemy.rect):
                     is_grounded = platform.handle_collision(enemy, enemy.rect)
                     if is_grounded:
                         enemy.is_grounded = True
                         enemy.jumping = False
-                enemy.update(self.player)
+            enemy.update(self.player, self.dt)
 
+        self.handle_enemy_collide_w_player()
         self.handle_bullet_collisions()
         self.player.update()
     
