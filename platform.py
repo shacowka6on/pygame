@@ -87,27 +87,19 @@ class Platform:
         return tile_index
 
     def create_tiled_surface(self):
-        # if self.original_height <= 64:
-        #     print("Entered here")
-
-        #     for x in range(self.tiles_x):
-        #         tile_index = self.draw_tiles(x, 9)
-        #         self.platform_surface.blit(self.tile_images[tile_index], (x * self.tile_width, self.tile_height))
-        #         print(tile_index)
-        # else:
-            for y in range (self.tiles_y):
-                for x in range (self.tiles_x):
-                    if self.original_height > 64:
-                        if y == 0:
-                            depthLevel = 3
-                        elif y == self.tiles_y - 1:
-                            depthLevel = 9
-                        else:
-                            depthLevel = 6
+        for y in range (self.tiles_y):
+            for x in range (self.tiles_x):
+                if self.original_height > 64:
+                    if y == 0:
+                        depthLevel = 3
+                    elif y == self.tiles_y - 1:
+                        depthLevel = 9
                     else:
-                        depthLevel = 0
-                    tile_index = self.draw_tiles(x, depthLevel)
-                    self.platform_surface.blit(self.tile_images[tile_index], (x * self.tile_width, y * self.tile_height))
+                        depthLevel = 6
+                else:
+                    depthLevel = 0
+                tile_index = self.draw_tiles(x, depthLevel)
+                self.platform_surface.blit(self.tile_images[tile_index], (x * self.tile_width, y * self.tile_height))
             
     def draw(self,screen):
         screen.blit(self.platform_surface, (self.x, self.y))

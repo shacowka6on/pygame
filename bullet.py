@@ -23,8 +23,8 @@ class Bullet:
         if hasattr(self, 'rect'):
             self.rect.center = (int(self.pos.x), int(self.pos.y))
 
-    def check_bullet_collision(self, enemy_rect):
-        return self.rect.colliderect(enemy_rect)
+    def did_bullet_collide(self, obj_rect):
+        return self.rect.colliderect(obj_rect)
     
     def draw(self, screen):
         if hasattr(self, 'image') and self.image:

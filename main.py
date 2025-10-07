@@ -24,7 +24,6 @@ class Game:
         self.enemies = [
             Enemy(200, 500)
         ]
-        self.enemy_last_attack = {id(enemy): 0 for enemy in self.enemies}  # Track cooldown per enemy
 
     def update_fps(self):
         fps = str(int(self.clock.get_fps()))
@@ -37,13 +36,19 @@ class Game:
 
         for bullet in self.player.bullets[:]:
             for enemy in self.enemies[:]:
-                if bullet.rect.colliderect(enemy.rect):
+                if bullet.did_bullet_collide(enemy.rect):
                     enemy_died = enemy.take_damage()
                     bullets_to_remove.append(bullet)
-
+                    print(f"{bullet.did_bullet_collide(enemy.rect)}")
                     if enemy_died:
                         enemies_to_remove.append(enemy)
                     break
+                print(f"outside of enemy loop")
+            for platform in self.platforms:
+                print(f"inside platform loop")
+                if bullet.did_bullet_collide(platform.rect):
+                    print("Entered here")
+                    bullets_to_remove.append(bullet)
 
         for bullet in bullets_to_remove:
             if bullet in self.player.bullets:
@@ -98,7 +103,7 @@ class Game:
         
         for platform in self.platforms:
             platform.draw(settings.screen)
-
+        
         self.player.draw(settings.screen)
 
         for enemy in self.enemies:

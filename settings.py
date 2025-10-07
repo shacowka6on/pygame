@@ -3,7 +3,7 @@ import pygame
 # Screen settings
 WIDTH, HEIGHT = 1280, 720
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-BACKGROUND_IMG = pygame.image.load("pygame/assets/game_background/Background.png")
+BACKGROUND_IMG = pygame.image.load("pygame/assets/game_background/Background.png").convert()
 BACKGROUND_IMG = pygame.transform.scale(BACKGROUND_IMG, (WIDTH, HEIGHT))
 BACKGROUND_COLOR = (50, 50, 50)
 
