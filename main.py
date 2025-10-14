@@ -22,7 +22,8 @@ class Game:
             
         ]
         self.enemies = [
-            Enemy(200, 500)
+            Enemy(200,200, "lizard"),
+            Enemy(300,400, "demon")
         ]
 
     def update_fps(self):
@@ -32,30 +33,30 @@ class Game:
     
     def handle_bullet_collisions(self):
         bullets_to_remove = []
-        enemies_to_remove = []
 
         for bullet in self.player.bullets[:]:
             for enemy in self.enemies[:]:
                 if bullet.did_bullet_collide(enemy.rect):
+                    # Trigger hurt state and take damage
                     enemy_died = enemy.take_damage()
                     bullets_to_remove.append(bullet)
-                    print(f"{bullet.did_bullet_collide(enemy.rect)}")
+
                     if enemy_died:
-                        enemies_to_remove.append(enemy)
+                        # Enemy will handle death animation in its update
+                        pass
                     break
-                print(f"outside of enemy loop")
+
             for platform in self.platforms:
-                print(f"inside platform loop")
                 if bullet.did_bullet_collide(platform.rect):
-                    print("Entered here")
                     bullets_to_remove.append(bullet)
 
         for bullet in bullets_to_remove:
             if bullet in self.player.bullets:
                 self.player.bullets.remove(bullet)
 
-        for enemy in enemies_to_remove:
-            if enemy in self.enemies:
+        # Remove dead enemies after death animation completes
+        for enemy in self.enemies[:]:
+            if enemy.health <= 0 and enemy.current_animation == "death" and enemy.current_frame >= len(enemy.sprites["death"]) - 1:
                 self.enemies.remove(enemy)
                 
     def handle_enemy_collide_w_player(self):
@@ -91,6 +92,7 @@ class Game:
                     if is_grounded:
                         enemy.is_grounded = True
                         enemy.jumping = False
+            # print(enemy.load_animations())
             enemy.update(self.player, self.dt)
 
         self.handle_enemy_collide_w_player()

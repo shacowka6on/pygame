@@ -108,8 +108,8 @@ class Player:
     def handle_shoot_input(self, target_x, target_y):
         current_time = pygame.time.get_ticks()
         if current_time - self.last_attack >= SHOOT_COOLDOWN:
-            #bullets spawn from the top of the player so i added +30 on y position 
-            bullet = Bullet(self.pos.x, self.pos.y + 30, target_x, target_y)
+            #bullets spawn from the top of the player so i added a little offset to x and y 
+            bullet = Bullet(self.pos.x + 15, self.pos.y + 30, target_x, target_y)
             self.bullets.append(bullet)
             self.last_attack = current_time
     

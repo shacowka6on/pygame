@@ -9,14 +9,15 @@ class Bullet:
         self.velocity = direction * BULLET_SPEED
 
         self.original_image = pygame.image.load('pygame/assets/laserBullet.png').convert_alpha()
-        self.original_image = pygame.transform.scale(self.original_image, (20, 30))
+        self.original_image = pygame.transform.scale(self.original_image, (15, 20))
         
         direction_vector = pygame.math.Vector2(target_x - x, target_y - y)
         angle = direction_vector.angle_to(pygame.math.Vector2(0, -1))
         # print(angle)
         
         self.image = pygame.transform.rotate(self.original_image, angle)
-        self.rect = self.image.get_rect(center=(x, y))
+        self.rect = self.image.get_rect(center=(10, 10))
+        
     
     def update(self):
         self.pos += self.velocity
