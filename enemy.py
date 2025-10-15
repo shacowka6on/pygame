@@ -2,6 +2,7 @@ from fileinput import filename
 import random
 import pygame
 from settings import *
+from spritesheet import SpriteSheet
 import os
 
 class Enemy:
@@ -30,7 +31,6 @@ class Enemy:
     
     def get_animation_offsets(self, facing_right):
         offsets = {}
-        print(f"gao: {facing_right}")
         if facing_right:
             offsets = {
                 "demon": {"x": -90, "y": -150},
@@ -194,19 +194,20 @@ class Enemy:
                 
             pygame.draw.rect(screen, color, health_rect)
 
-    def load_images(self):
-        path_to_directory = f"pygame/assets/enemies/{self.type}"
-        images = {}
-        for dirpath, dirnames, filenames in os.walk(path_to_directory):
-            for name in filenames:
-                if name.endswith('.png'):
-                    key = name[:-4]
-                    img = pygame.image.load(os.path.join(dirpath, name)).convert_alpha()
-                    images[key] = img
-        return images
+    # def load_images(self):
+    #     path_to_directory = f"pygame/assets/enemies/{self.type}"
+    #     images = {}
+    #     for dirpath, dirnames, filenames in os.walk(path_to_directory):
+    #         for name in filenames:
+    #             if name.endswith('.png'):
+    #                 key = name[:-4]
+    #                 img = pygame.image.load(os.path.join(dirpath, name)).convert_alpha()
+    #                 images[key] = img
+    #     return images
     
     def fill_sprites_dict(self):
-        imgs = self.load_images()
+        # imgs = self.load_images()
+        imgs = SpriteSheet.load_images(self.type)
 
         self.sprites = {"attack": [], "death": [], "hurt": [], "idle": [], "walk": []}
 

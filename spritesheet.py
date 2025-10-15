@@ -1,4 +1,5 @@
 import pygame
+import os
 
 class SpriteSheet():
     def __init__(self, image):
@@ -10,3 +11,14 @@ class SpriteSheet():
         image = pygame.transform.scale(image, (width * scale, height * scale))
 
         return image
+    
+    def load_images(type):
+        path_to_directory = f"pygame/assets/enemies/{type}"
+        images = {}
+        for dirpath, dirnames, filenames in os.walk(path_to_directory):
+            for name in filenames:
+                if name.endswith('.png'):
+                    key = name[:-4]
+                    img = pygame.image.load(os.path.join(dirpath, name)).convert_alpha()
+                    images[key] = img
+        return images
