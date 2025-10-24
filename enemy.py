@@ -36,13 +36,11 @@ class Enemy:
                 "demon": {"x": -90, "y": -150},
                 "lizard": {"x": -100, "y": -120}
             }
-            # print(f"Facing right x offset: {offsets["x"]}")
         else:
             offsets = {
                 "demon": {"x": -140, "y": -150},
                 "lizard": {"x": -130, "y": -120}
             }
-            # print(f"Facing left x offset: {offsets["x"]}")
         return offsets.get(self.type, {"x": 0, "y": 0})
     
     def apply_gravity(self, dt):
@@ -193,21 +191,9 @@ class Enemy:
                 color = (255, 0, 0)
                 
             pygame.draw.rect(screen, color, health_rect)
-
-    # def load_images(self):
-    #     path_to_directory = f"pygame/assets/enemies/{self.type}"
-    #     images = {}
-    #     for dirpath, dirnames, filenames in os.walk(path_to_directory):
-    #         for name in filenames:
-    #             if name.endswith('.png'):
-    #                 key = name[:-4]
-    #                 img = pygame.image.load(os.path.join(dirpath, name)).convert_alpha()
-    #                 images[key] = img
-    #     return images
     
     def fill_sprites_dict(self):
-        # imgs = self.load_images()
-        imgs = SpriteSheet.load_images(self.type)
+        imgs = SpriteSheet.load_enemy_images(self.type)
 
         self.sprites = {"attack": [], "death": [], "hurt": [], "idle": [], "walk": []}
 
@@ -261,8 +247,6 @@ class Enemy:
             draw_x = self.rect.centerx + offset_x
             draw_y = self.rect.centery + offset_y
 
-            # print(f"{self.facing_right}: rectx:{self.rect.centerx} | drawx:{draw_x}/offx:{offset_x}/")
-            
             screen.blit(current_image, (draw_x, draw_y))
         
         self.draw_enemy_healthbar(screen)

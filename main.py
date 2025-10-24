@@ -2,6 +2,7 @@ import pygame
 from player import Player
 from enemy import Enemy
 from platform import Platform 
+from collectible import Collectible
 import settings
 
 pygame.init()
@@ -24,6 +25,9 @@ class Game:
         self.enemies = [
             Enemy(200,200, "lizard"),
             Enemy(300,400, "demon")
+        ]
+        self.collectibles = [
+            Collectible(100,100,"heart")
         ]
 
     def update_fps(self):
@@ -94,6 +98,11 @@ class Game:
                         enemy.jumping = False
             # print(enemy.load_animations())
             enemy.update(self.player, self.dt)
+
+        for collectible in self.collectibles:
+            # collectible.draw(settings.screen)
+            # collectible.animate(self.dt)
+            settings.screen.blit(collectible.draw(), (200,200))
 
         self.handle_enemy_collide_w_player()
         self.handle_bullet_collisions()
