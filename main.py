@@ -1,9 +1,11 @@
 import pygame
 from player import Player
+from bullet import Bullet
 from enemy import Enemy
 from platform import Platform
 from collectible import Heart, Overhealth
 from interactable import Door, Lever
+from level import Level, make_test_level
 from settings import *
 import settings
 
@@ -17,33 +19,15 @@ class Game:
         self.dt = 0
         self.player = Player(520, 50)
         self.font = pygame.font.SysFont("Calibri", 30)
-        self.platforms = [
-            #        x   y   w   h
-            # Platform(700,600,128,64), #level 1 depth
-            Platform(500,550,500,100),
-            Platform(300,550,100,200),
-            Platform(200,100,400,80),
-            Platform(0,settings.FLOOR,settings.WIDTH, 130), #main bottom platform
+        self.level = make_test_level()
+        # self.platforms = [
+        #     #        x   y   w   h
+        #     # Platform(700,600,128,64), #level 1 depth
+        #     Platform(500,550,500,100),
+        #     Platform(300,550,100,200),
+        #     Platform(200,100,400,80),
+        #     Platform(0,settings.FLOOR,settings.WIDTH, 130), #main bottom platform
 
-        ]
-        self.enemies = [
-             Enemy(200,200, "lizard"),
-             Enemy(200,200, "lizard"),
-             Enemy(400,400, "demon"),
-            Enemy(400,400, "demon"),
-        ]
-        self.hearts = [
-            Heart(140,650)
-        ]
-        self.overhealths = [
-            Overhealth(300, 500)
-        ]
-        self.door = Door(700, 500)
-        # self.lever = Lever(360, 530)
-        self.levers = [
-            Lever(360, 530),
-            Lever(600, 530)
-        ]
 
     def get_fps_text(self):
         fps = str(int(self.clock.get_fps()))
@@ -71,49 +55,10 @@ class Game:
                 count -= 1
         if count == 0:
             self.door.is_open = True
-
-    def collect_heart(self):
-        for heart in self.hearts[:]:
-            if heart.check_collision(self.player.rect) and self.player.health < 100:
-                self.hearts.remove(heart)
-                heart.on_collect(self.player)
-
-    def collect_overhealth(self):
-        for overhealth in self.overhealths[:]:
-            if overhealth.check_collision(self.player.rect):
-                self.overhealths.remove(overhealth)
-                overhealth.on_collect(self.player)
             
-    def update_bullets(self):
-        bullets_to_remove = []
-
-        for bullet in self.player.bullets[:]:
-            for enemy in self.enemies[:]:
-                if bullet.did_bullet_collide(enemy.rect):
-                    # Trigger hurt state and take damage
-                    enemy_died = enemy.take_damage()
-                    bullets_to_remove.append(bullet)
-
-                    if enemy_died:
-                        # Enemy will handle death animation in its update
-                        pass
-                    break
-
-            for platform in self.platforms:
-                if bullet.did_bullet_collide(platform.rect):
-                    bullets_to_remove.append(bullet)
-
-        for bullet in bullets_to_remove:
-            if bullet in self.player.bullets:
-                self.player.bullets.remove(bullet)
-
-        # Remove dead enemies after death animation completes
-        for enemy in self.enemies[:]:
-            if enemy.health <= 0 and enemy.current_animation == "death" and enemy.current_frame >= len(enemy.sprites["death"]) - 1:
-                self.enemies.remove(enemy)
 
     def check_enemy_melee(self):
-        for enemy in self.enemies:
+        for enemy in self.level.enemies:
             if enemy.rect.colliderect(self.player.rect):    
                 enemy.attack_player(self.player)
 
@@ -132,48 +77,43 @@ class Game:
     def update(self):
         keys = pygame.key.get_pressed()
         self.player.handle_movement_input(keys, self.dt)
-        self.player.is_grounded = False
+        self.player.handle_player_platform_collisions(self.player, self.level.platforms)
+        self.player.update_animation()
 
-        for platform in self.platforms:
-            if platform.check_collision(self.player.rect):
-                is_grounded = platform.handle_collision(self.player, self.player.rect)
-                if is_grounded:
-                    self.player.is_grounded = True
-                    self.player.jumping = False
-
-        for enemy in self.enemies:
-            for platform in self.platforms:
-                if platform.check_collision(enemy.rect):
-                    is_grounded = platform.handle_collision(enemy, enemy.rect)
-                    if is_grounded:
-                        enemy.is_grounded = True
-                        enemy.jumping = False
+        for enemy in self.level.enemies:
+            enemy.handle_enemy_platform_collisions(self.level.platforms)
             enemy.update(self.player, self.dt)
 
-        self.collect_heart()
-        self.collect_overhealth()
+        #get health
+        for heart in self.level.hearts:
+            heart.collect_heart(self.player, self.level.hearts)
+        for overhealth in self.level.overhealths:
+             overhealth.collect_overhealth(self.player, self.level.overhealths)
+
+        for bullet in self.player.bullets[:]:
+            bullet.update()
+            bullet.remove_bullet(self.player.bullets, self.level.enemies, self.level.platforms)
+
         self.check_enemy_melee()
-        self.update_bullets()
-        self.player.update()
 
     def draw(self):
         settings.screen.fill(settings.BACKGROUND_COLOR)
         settings.screen.blit(settings.BACKGROUND_IMG, (0,0))
 
-        for platform in self.platforms:
+        for platform in self.level.platforms:
             platform.draw(settings.screen)
 
-        for enemy in self.enemies:
-             enemy.draw(settings.screen)
+        # for enemy in self.level.enemies:
+        #      enemy.draw(settings.screen)
 
-        for heart in self.hearts:
+        for heart in self.level.hearts:
             heart.draw(settings.screen)
         
-        for overhealth in self.overhealths:
+        for overhealth in self.level.overhealths:
             overhealth.draw(settings.screen)
 
-        self.door.draw(settings.screen)
-        for lever in self.levers:
+        self.level.door.draw(settings.screen)
+        for lever in self.level.levers:
             lever.draw(settings.screen)
         self.player.draw(settings.screen)
 

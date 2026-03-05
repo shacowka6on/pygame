@@ -54,6 +54,15 @@ class Player:
             if self.rect.colliderect(interactable.rect) and keys[pygame.K_e]:
                 interactable.on_interact(self)
 
+    def handle_player_platform_collisions(self, player, platforms):
+        player.is_grounded = False
+        for platform in platforms:
+            if platform.check_collision(player.rect):
+                is_grounded = platform.handle_collision(player, player.rect)
+                if is_grounded:
+                    player.is_grounded = True
+                    player.jumping = False
+
     def handle_movement_input(self, keys, dt):
         self.velocity.x = 0
         if keys[pygame.K_a]:
@@ -114,14 +123,14 @@ class Player:
             self.bullets.append(bullet)
             self.last_attack = current_time
     
-    def update(self):
-        for bullet in self.bullets[:]:
-            bullet.update()
-            if (bullet.pos.x < 0 or bullet.pos.x > WIDTH or 
-                bullet.pos.y < 0 or bullet.pos.y > HEIGHT):
-                self.bullets.remove(bullet)
+    # def update(self):
+    #     for bullet in self.bullets[:]:
+    #         bullet.update()
+    #         if (bullet.pos.x < 0 or bullet.pos.x > WIDTH or 
+    #             bullet.pos.y < 0 or bullet.pos.y > HEIGHT):
+    #             self.bullets.remove(bullet)
         
-        self.update_animation()
+    #     self.update_animation()
     
     def update_animation(self):
         current_time = pygame.time.get_ticks()

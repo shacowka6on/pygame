@@ -40,6 +40,12 @@ class Heart(Collectible):
     
     def on_collect(self, player):
         player.health = min(player.health + 20, 100)
+    
+    def collect_heart(self, player, hearts):
+        for heart in hearts[:]:
+            if heart.check_collision(player.rect) and player.health < 100:
+                hearts.remove(heart)
+                heart.on_collect(player)
 
 class Overhealth(Collectible):
     def load_sprites(self):
@@ -48,3 +54,9 @@ class Overhealth(Collectible):
     
     def on_collect(self, player):
         player.health += 30
+
+    def collect_overhealth(self, player, overhealths):
+        for overhealth in overhealths[:]:
+            if overhealth.check_collision(player.rect):
+                overhealths.remove(overhealth)
+                overhealth.on_collect(player)

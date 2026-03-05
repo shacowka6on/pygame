@@ -136,6 +136,14 @@ class Enemy:
             player.take_damage()
             self.last_attack = now
 
+    def handle_enemy_platform_collisions(self, platforms):
+        self.is_grounded = False
+        for platform in platforms:
+            if platform.check_collision(self.rect):
+                is_grounded = platform.handle_collision(self, self.rect)
+                if is_grounded:
+                    self.is_grounded = True
+
     # ------------------------------------------------------------------ update
 
     def update(self, player, dt):
