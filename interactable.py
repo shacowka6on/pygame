@@ -28,7 +28,6 @@ class Lever(Interactable):
         return [images_dict[key] for key in sorted(images_dict.keys())]
     
     def on_interact(self, player, keys):
-        # print(player.rect.colliderect(self.rect))
         if player.rect.colliderect(self.rect) and keys[pygame.K_e]:
             self.is_activated = True
         
@@ -47,6 +46,7 @@ class Door(Interactable):
         super().__init__(x, y)
         self.rect = pygame.Rect(x, y, 70, 70)
         self.is_open = False
+        self.next_level = 0
 
     def load_sprites(self):
         images_dict = SpriteSheet.load_interactable_images("door")
@@ -54,6 +54,7 @@ class Door(Interactable):
     
     def on_interact(self):
         if self.is_open:
+            self.next_level += 1
             print("Door is open, player can pass through")
     
     def draw(self, screen):

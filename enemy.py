@@ -136,6 +136,10 @@ class Enemy:
             player.take_damage()
             self.last_attack = now
 
+    def check_enemy_melee(self, enemy, player):
+        if enemy.rect.colliderect(player.rect):    
+            enemy.attack_player(player)
+
     def handle_enemy_platform_collisions(self, platforms):
         self.is_grounded = False
         for platform in platforms:
@@ -198,6 +202,9 @@ class Enemy:
         else:
             self.current_frame = (self.current_frame + 1) % len(frames)
 
+    def remove_enemy(self, enemies):
+        if self.state == "DEATH" and self.current_frame >= len(self.sprites["death"]) - 1:
+            enemies.remove(self)
     # ------------------------------------------------------------------- draw
 
     def draw(self, screen):

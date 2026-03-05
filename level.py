@@ -3,9 +3,12 @@ from collectible import Heart, Overhealth
 from enemy import Enemy
 from interactable import Door, Lever
 from platform import Platform
+from player import Player
+from settings import FLOOR, WIDTH
 
 class Level:
-    def __init__(self, platforms, enemies, hearts, overhealths, levers, door):
+    def __init__(self, player_pos, platforms, enemies, hearts, overhealths, levers, door):
+        self.player = pygame.Vector2(player_pos.pos.x, player_pos.pos.y)
         self.platforms = platforms
         self.enemies = enemies
         self.hearts = hearts
@@ -13,15 +16,16 @@ class Level:
         self.levers = levers
         self.door = door
 
-def make_test_level():
+def test_level():
+    player = Player(100,500)
+    
     platforms = [
-        Platform(500,550,500,100),
-        Platform(300,550,100,200)
+        Platform(0,FLOOR,WIDTH, 130),
     ]
 
     enemies = [
-        # Enemy(600, 400, "lizard"),
-        # Enemy(700, 400, "demon")
+        Enemy(600, 400, "lizard"),
+        Enemy(700, 400, "demon")
     ]
 
     hearts = [
@@ -34,14 +38,16 @@ def make_test_level():
     ]
 
     levers = [
-        Lever(400, 500)
+        Lever(145, 530)
     ]
 
-    door = Door(800, 450)
+    door = Door(600, 500)
 
-    return Level(platforms, enemies, hearts, overhealths, levers, door)
+    return Level(player, platforms, enemies, hearts, overhealths, levers, door)
 
-def make_level_1():
+def level_1():
+    player = Player(100,500)
+
     platforms = [
         Platform(500,550,500,100),
         Platform(300,550,100,200),
@@ -69,4 +75,4 @@ def make_level_1():
 
     door = Door(700, 500)
 
-    return Level(platforms, enemies, hearts, overhealths, levers, door)
+    return Level(player, platforms, enemies, hearts, overhealths, levers, door)

@@ -31,45 +31,12 @@ class Bullet:
                 bullets.remove(bullet)
             for enemy in enemies[:]:
                 if bullet.did_bullet_collide(enemy.rect):
-                    # Trigger hurt state and take damage
-                    enemy_died = enemy.take_damage()
+                    enemy.take_damage()
                     bullets.remove(bullet)
 
-                    if enemy_died:
-                        # Enemy will handle death animation in its update
-                        pass
-                    break
             for platform in platforms:
                 if bullet.did_bullet_collide(platform.rect):
                     bullets.remove(bullet)
-
-    def update_bullets(self,player,level):
-        bullets_to_remove = []
-
-        # for bullet in player.bullets[:]:
-            # for enemy in level.enemies[:]:
-            #     if bullet.did_bullet_collide(enemy.rect):
-            #         # Trigger hurt state and take damage
-            #         enemy_died = enemy.take_damage()
-            #         bullets_to_remove.append(bullet)
-
-            #         if enemy_died:
-            #             # Enemy will handle death animation in its update
-            #             pass
-            #         break
-
-        #     for platform in level.platforms:
-        #         if bullet.did_bullet_collide(platform.rect):
-        #             bullets_to_remove.append(bullet)
-
-        # for bullet in bullets_to_remove:
-        #     if bullet in player.bullets:
-        #         player.bullets.remove(bullet)
-
-        # Remove dead enemies after death animation completes
-        for enemy in level.enemies[:]:
-            if enemy.health <= 0 and enemy.current_animation == "death" and enemy.current_frame >= len(enemy.sprites["death"]) - 1:
-                level.enemies.remove(enemy)
 
     def did_bullet_collide(self, obj_rect):
         return self.rect.colliderect(obj_rect)
