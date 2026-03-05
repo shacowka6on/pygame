@@ -12,8 +12,7 @@ class SpriteSheet():
 
         return image
     
-    def load_enemy_images(type):
-        path_to_directory = f"pygame/assets/enemies/{type}"
+    def load_sprite_images(path_to_directory):
         images = {}
         for dirpath, dirnames, filenames in os.walk(path_to_directory):
             for name in filenames:
@@ -21,15 +20,18 @@ class SpriteSheet():
                     key = name[:-4]
                     img = pygame.image.load(os.path.join(dirpath, name)).convert_alpha()
                     images[key] = img
+        # print(f"Loaded images from {path_to_directory}: {list(images.keys())}")
         return images
+
+    def load_enemy_images(type):
+        path_to_directory = f"pygame/assets/enemies/{type}"
+        return SpriteSheet.load_sprite_images(path_to_directory)
 
     def load_collectable_images(type):
         path_to_directory = f"pygame/assets/collectibles/{type}"
-        images = {}
-        for dirpath, dirnames, filenames in os.walk(path_to_directory):
-            for name in filenames:
-                if name.endswith('.png'):
-                    key = name[:-4]
-                    img = pygame.image.load(os.path.join(dirpath, name)).convert_alpha()
-                    images[key] = img
-        return images
+        return SpriteSheet.load_sprite_images(path_to_directory)
+    
+    def load_interactable_images(type):
+        path_to_directory = f"pygame/assets/items/{type}"
+        return SpriteSheet.load_sprite_images(path_to_directory)
+    

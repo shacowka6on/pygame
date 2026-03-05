@@ -13,7 +13,6 @@ class Bullet:
         
         direction_vector = pygame.math.Vector2(target_x - x, target_y - y)
         angle = direction_vector.angle_to(pygame.math.Vector2(0, -1))
-        # print(angle)
         
         self.image = pygame.transform.rotate(self.original_image, angle)
         self.rect = self.image.get_rect(center=(10, 10))

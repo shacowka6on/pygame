@@ -7,7 +7,7 @@ class Player:
     def __init__(self, x, y):
         self.pos = pygame.Vector2(x, y)
         self.velocity = pygame.Vector2(0, 0)
-        self.health = 100
+        self.health = 80
         self.facing_right = True
         self.jumping = False
         self.last_jump_time = 0
@@ -28,7 +28,6 @@ class Player:
     def draw_player_health(self):
         font = pygame.font.SysFont("Calibri", 30)
         text = font.render(f"Health: {self.health}", False, "Red")
-        # screen.blit(text, (10,0))
         return text
 
 
@@ -50,56 +49,58 @@ class Player:
         
         return animation_list
     
+    def handle_interaction(self, keys, interactables):
+        for interactable in interactables:
+            if self.rect.colliderect(interactable.rect) and keys[pygame.K_e]:
+                interactable.on_interact(self)
+
     def handle_movement_input(self, keys, dt):
         self.velocity.x = 0
         if keys[pygame.K_a]:
             self.velocity.x = -MOVE_SPEED * dt
             self.facing_right = False
-            self.check_for_ground()
         if keys[pygame.K_d]:
             self.velocity.x = MOVE_SPEED * dt
             self.facing_right = True
-            self.check_for_ground()
-        if keys[pygame.K_SPACE] and not self.jumping:
-            self.jump(keys)
+        
+        self.check_for_ground()
+
+        # if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+        #     self.jump()
             
         self.pos.x += self.velocity.x
         self.pos.y += self.velocity.y
         
         self.rect.x = self.pos.x
         self.rect.y = self.pos.y
-
-        if self.jumping:
-            self.velocity.y += GRAVITY
-            if self.pos.y >= FLOOR: 
-                self.pos.y = FLOOR
-                self.jumping = False
-                self.velocity.y = 0
-            # print(f"{self.jumping}: vely:{self.velocity.y} | posy:{self.pos.y} | ")
             
     
-    def jump(self, keys):
+    def jump(self):
         current_time = pygame.time.get_ticks()
 
         if current_time - self.last_jump_time < self.jumping_cooldown:
             return False
         
         #if player is moving give him a boost or the jump is shorter
-        boost = 0
-        if keys[pygame.K_a] or keys[pygame.K_d]:
-            boost = -5
+        # boost = 0
+        # if keys[pygame.K_a] or keys[pygame.K_d]:
+        #     boost = -5 
 
         if not self.jumping:
             self.last_jump_time = current_time
             self.jumping = True
-            self.velocity.y = -JUMP_FORCE + boost
-            return True
-        
-        return False
+            self.velocity.y = -JUMP_FORCE 
+        elif self.jumping:
+            self.velocity.y += GRAVITY
+            if self.pos.y >= FLOOR: 
+                self.pos.y = FLOOR
+                self.jumping = False
+                self.velocity.y = 0
     
     def check_for_ground(self):
         if not self.is_grounded:
             self.velocity.y += GRAVITY
+            # print(self.action)
 
     def take_damage(self):
         self.health -= ENEMY_DAMAGE
@@ -108,7 +109,7 @@ class Player:
     def handle_shoot_input(self, target_x, target_y):
         current_time = pygame.time.get_ticks()
         if current_time - self.last_attack >= SHOOT_COOLDOWN:
-            #bullets spawn from the top of the player so i added a little offset to x and y 
+            #added a little offset to x and y because bullets spawn from the top of the player 
             bullet = Bullet(self.pos.x + 15, self.pos.y + 30, target_x, target_y)
             self.bullets.append(bullet)
             self.last_attack = current_time
@@ -128,9 +129,9 @@ class Player:
         new_action = self.action
         if self.jumping:
             if self.velocity.y > 0:
-                new_action = 2  # jumping 
-            else:
-                new_action = 1  # falling down
+                new_action = 1  # jumping 
+        if self.velocity.y > 1:
+            new_action = 2  # falling down
         elif self.velocity.x != 0:
             new_action = 3  # running
         else:
@@ -142,8 +143,6 @@ class Player:
             self.last_animation_update = current_time
             
         #reset to frame 0 when changing action or the game crashes
-        if self.action >= len(self.animation_list):
-            self.action = 0
         if self.frame >= len(self.animation_list[self.action]):
             self.frame = 0 
 

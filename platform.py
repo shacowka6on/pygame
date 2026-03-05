@@ -15,14 +15,10 @@ class Platform:
         
         self.width = self.tiles_x * self.tile_width
         self.height = self.tiles_y * self.tile_height
-        self.rect = pygame.Rect(x,y,self.width,self.height)
-        self.rect = pygame.Rect.inflate(self.rect,-30,-20)
+        self.rect = pygame.Rect(x,y,self.width,self.height).inflate(-30,-20)
        
         self.platform_surface = pygame.Surface((self.tiles_x * self.tile_width, self.tiles_y * self.tile_height), pygame.SRCALPHA)
         self.create_tiled_surface()
-
-    def update(self, x_shift):
-        self.rect.x += x_shift
 
     def check_collision(self, player_rect):
         return self.rect.colliderect(player_rect)
