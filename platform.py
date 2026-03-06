@@ -97,7 +97,7 @@ class Platform:
                 tile_index = self.draw_tiles(x, depthLevel)
                 self.platform_surface.blit(self.tile_images[tile_index], (x * self.tile_width, y * self.tile_height))
             
-    def draw(self,screen):
-        screen.blit(self.platform_surface, (self.x, self.y))
+    def draw(self,screen, offset_x=0, offset_y=0):
+        screen.blit(self.platform_surface, (self.x - offset_x, self.y - offset_y))
         pygame.draw.rect(screen, (255,0,0), self.rect, 2) #debugging tool
         

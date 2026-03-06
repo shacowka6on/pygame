@@ -27,11 +27,11 @@ class Collectible:
             self.animation_timer = 0
             self.current_frame = (self.current_frame + 1) % len(self.sprites)
 
-    def draw(self, screen):
+    def draw(self, screen, offset_x=0, offset_y=0):
         self.animate(0.1)
         if self.sprites[self.current_frame]:
             current_image = self.sprites[self.current_frame]
-        screen.blit(current_image, self.pos)
+        screen.blit(current_image, (self.pos.x - offset_x, self.pos.y - offset_y))
 
 class Heart(Collectible):
     def load_sprites(self):

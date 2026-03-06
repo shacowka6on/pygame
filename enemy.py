@@ -207,7 +207,7 @@ class Enemy:
             enemies.remove(self)
     # ------------------------------------------------------------------- draw
 
-    def draw(self, screen):
+    def draw(self, screen, offset_x=0, offset_y=0):
         if self.sprites[self.current_animation]:
             img = self.sprites[self.current_animation][self.current_frame]
 
@@ -215,26 +215,28 @@ class Enemy:
                 img = pygame.transform.flip(img, True, False)
 
             offsets = ANIMATION_OFFSETS[self.facing_right].get(self.type, (0, 0))
-            screen.blit(img, (self.rect.centerx + offsets[0], self.rect.centery + offsets[1]))
+            offset_rect_x = self.rect.centerx + offsets[0]
+            offset_rect_y = self.rect.centery + offsets[1]
+            screen.blit(img, (offset_rect_x - offset_x, offset_rect_y - offset_y))
 
-        self._draw_healthbar(screen)
+        self._draw_healthbar(screen,offset_x,offset_y)
 
         # state indicator dot (debug)
         pygame.draw.circle(screen, STATE_COLORS[self.state],
                            (int(self.pos.x + 15), int(self.pos.y - 20)), 3)
         pygame.draw.rect(screen, (255, 0, 0), self.rect, 2)
 
-    def _draw_healthbar(self, screen):
+    def _draw_healthbar(self, screen, offset_x=0, offset_y=0):
         bar_x, bar_y = self.pos.x, self.pos.y - 10
         bar_w, bar_h = 30, 5
 
-        pygame.draw.rect(screen, (50, 50, 50), (bar_x, bar_y, bar_w, bar_h))
+        pygame.draw.rect(screen, (50, 50, 50), (bar_x - offset_x, bar_y - offset_y, bar_w, bar_h))
 
         ratio = self.health / ENEMY_HEALTH
         fill_w = max(0, int(bar_w * ratio))
         if fill_w:
             color = (0, 255, 0) if ratio > 0.6 else (255, 255, 0) if ratio > 0.3 else (255, 0, 0)
-            pygame.draw.rect(screen, color, (bar_x, bar_y, fill_w, bar_h))
+            pygame.draw.rect(screen, color, (bar_x - offset_x, bar_y - offset_y, fill_w, bar_h))
 
     # ------------------------------------------------------------------ setup
 

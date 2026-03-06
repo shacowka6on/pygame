@@ -48,11 +48,6 @@ class Player:
             animation_list.append(temp_img_list)
         
         return animation_list
-    
-    def handle_interaction(self, keys, interactables):
-        for interactable in interactables:
-            if self.rect.colliderect(interactable.rect) and keys[pygame.K_e]:
-                interactable.on_interact(self)
 
     def handle_player_platform_collisions(self, player, platforms):
         player.is_grounded = False
@@ -71,11 +66,10 @@ class Player:
         if keys[pygame.K_d]:
             self.velocity.x = MOVE_SPEED * dt
             self.facing_right = True
+        if keys[pygame.K_SPACE]:
+            self.jump()
         
         self.check_for_ground()
-
-        # if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
-        #     self.jump()
             
         self.pos.x += self.velocity.x
         self.pos.y += self.velocity.y
@@ -114,7 +108,7 @@ class Player:
     def take_damage(self):
         self.health -= ENEMY_DAMAGE
         return self.health <= 0
-    
+
     def handle_shoot_input(self, target_x, target_y):
         current_time = pygame.time.get_ticks()
         if current_time - self.last_attack >= SHOOT_COOLDOWN:
@@ -122,15 +116,6 @@ class Player:
             bullet = Bullet(self.pos.x + 15, self.pos.y + 30, target_x, target_y)
             self.bullets.append(bullet)
             self.last_attack = current_time
-    
-    # def update(self):
-    #     for bullet in self.bullets[:]:
-    #         bullet.update()
-    #         if (bullet.pos.x < 0 or bullet.pos.x > WIDTH or 
-    #             bullet.pos.y < 0 or bullet.pos.y > HEIGHT):
-    #             self.bullets.remove(bullet)
-        
-    #     self.update_animation()
     
     def update_animation(self):
         current_time = pygame.time.get_ticks()
@@ -159,17 +144,16 @@ class Player:
             self.frame = (self.frame + 1) % len(self.animation_list[self.action])
             self.last_animation_update = current_time
     
-    def draw(self, screen):
-        for bullet in self.bullets:
-            bullet.draw(screen)
+    def draw(self, screen, offset_x=0, offset_y=0):
+        # for bullet in self.bullets:
+        #     bullet.draw(screen)
         
         frame_img = self.animation_list[self.action][self.frame]
         if not self.facing_right:
             frame_img = pygame.transform.flip(frame_img, True, False)
         
         frame_rect = frame_img.get_rect(center=(self.pos.x + 20, self.pos.y + 20))
-        screen.blit(frame_img, frame_rect)
-
+        screen.blit(frame_img, (frame_rect.x - offset_x, frame_rect.y - offset_y))
         screen.blit(self.draw_player_health(), (10,0))
 
         pygame.draw.rect(screen, (0,255,0), self.rect, 2) #debugging tool

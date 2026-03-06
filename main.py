@@ -1,13 +1,10 @@
 import pygame
 from player import Player
-from bullet import Bullet
-from enemy import Enemy
-from platform import Platform
-from collectible import Heart, Overhealth
-from interactable import Door, Lever
-from level import Level, level_1, test_level
+from level import level_1, test_level
 from settings import *
 import settings
+import camera
+from camera import Camera
 
 pygame.init()
 pygame.font.init()
@@ -22,6 +19,7 @@ class Game:
         self.levels = [test_level(), level_1()]
         self.level = self.levels[self.current_level]
         self.player = Player(self.level.player.x, self.level.player.y)
+        self.camera = Camera()
 
     def get_fps_text(self):
         fps = str(int(self.clock.get_fps()))
@@ -40,7 +38,8 @@ class Game:
     def interact_with_door(self, player, keys):
         if self.level.door.rect.colliderect(player.rect) and keys[pygame.K_e]:
             self.level.door.on_interact()
-            self.level = self.levels[self.current_level + 1]
+            if self.level.door.is_open:
+                self.level = self.levels[self.current_level + 1]
     
     def interact_with_lever(self, player, keys):
         count = len(self.level.levers)
@@ -68,7 +67,7 @@ class Game:
         self.player.handle_movement_input(keys, self.dt)
         self.player.handle_player_platform_collisions(self.player, self.level.platforms)
         self.player.update_animation()
-
+        
         for enemy in self.level.enemies:
             enemy.handle_enemy_platform_collisions(self.level.platforms)
             enemy.check_enemy_melee(enemy, self.player)
@@ -89,25 +88,31 @@ class Game:
     def draw(self):
         settings.screen.fill(settings.BACKGROUND_COLOR)
         settings.screen.blit(settings.BACKGROUND_IMG, (0,0))
+        ox = self.camera.offset_x
+        oy = self.camera.offset_y
+        self.camera.update(self.player)
 
-        self.level.door.draw(settings.screen)
+        self.level.door.draw(settings.screen,ox,oy)
 
         for platform in self.level.platforms:
-            platform.draw(settings.screen)
+            platform.draw(settings.screen,ox,oy)
+
+        for bullet in self.player.bullets:
+            bullet.draw(settings.screen,ox,oy)
 
         for enemy in self.level.enemies:
-             enemy.draw(settings.screen)
+             enemy.draw(settings.screen,ox,oy)
 
         for heart in self.level.hearts:
-            heart.draw(settings.screen)
+            heart.draw(settings.screen,ox,oy)
         
         for overhealth in self.level.overhealths:
-            overhealth.draw(settings.screen)
+            overhealth.draw(settings.screen,ox,oy)
 
         for lever in self.level.levers:
-            lever.draw(settings.screen)
+            lever.draw(settings.screen,ox,oy)
 
-        self.player.draw(settings.screen)
+        self.player.draw(settings.screen,ox,oy)
 
         self.draw_fps(settings.screen)
         self.draw_cursor_info(settings.screen)

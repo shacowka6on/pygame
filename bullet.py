@@ -26,23 +26,29 @@ class Bullet:
     def remove_bullet(self, bullets, enemies, platforms):
         for bullet in bullets[:]:
             bullet.update()
-            if (bullet.pos.x < 0 or bullet.pos.x > WIDTH or 
-                bullet.pos.y < 0 or bullet.pos.y > HEIGHT):
+            if (bullet.pos.x < 0 or bullet.pos.x > 2000 or 
+                bullet.pos.y < 0 or bullet.pos.y > 2000):
                 bullets.remove(bullet)
+            hit_something = False
             for enemy in enemies[:]:
-                if bullet.did_bullet_collide(enemy.rect):
+                if bullet.check_if_bullet_collide(enemy.rect):
+                    bullets.remove(bullet)
                     enemy.take_damage()
-                    bullets.remove(bullet)
-
+                    hit_something = True
+                    break
+            if hit_something:
+                continue
             for platform in platforms:
-                if bullet.did_bullet_collide(platform.rect):
+                if bullet.check_if_bullet_collide(platform.rect):
                     bullets.remove(bullet)
+                    hit_something = True
+                    break
 
-    def did_bullet_collide(self, obj_rect):
+    def check_if_bullet_collide(self, obj_rect):
         return self.rect.colliderect(obj_rect)
     
-    def draw(self, screen):
+    def draw(self, screen, offset_x=0, offset_y=0):
         if hasattr(self, 'image') and self.image:
-            screen.blit(self.image, self.rect)
+            screen.blit(self.image, (self.rect.x - offset_x, self.rect.y - offset_y))
         pygame.draw.rect(screen, (0,0,255), self.rect, 2) #debugging tool
         

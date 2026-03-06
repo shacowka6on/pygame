@@ -31,13 +31,13 @@ class Lever(Interactable):
         if player.rect.colliderect(self.rect) and keys[pygame.K_e]:
             self.is_activated = True
         
-    def draw(self, screen):
+    def draw(self, screen, offset_x=0, offset_y=0):
         if(self.is_activated):
             self.image = self.sprite[0]
         else:
             self.image = self.sprite[1]
 
-        screen.blit(self.image, self.pos)
+        screen.blit(self.image, (self.pos.x - offset_x, self.pos.y - offset_y))
         pygame.draw.rect(screen, (0,0,255), self.rect, 2) #debugging tool   
 
     
@@ -57,11 +57,11 @@ class Door(Interactable):
             self.next_level += 1
             print("Door is open, player can pass through")
     
-    def draw(self, screen):
+    def draw(self, screen, offset_x=0, offset_y=0):
         if(self.is_open):
             self.image = self.sprite[1]
         else:
             self.image = self.sprite[0]
 
-        screen.blit(self.image, self.pos)
+        screen.blit(self.image, (self.pos.x - offset_x, self.pos.y - offset_y))
         pygame.draw.rect(screen, (0,0,255), self.rect, 2) #debugging tool
