@@ -24,14 +24,14 @@ class SpriteSheet():
         return images
 
     def load_enemy_images(type):
-        path_to_directory = f"pygame/assets/enemies/{type}"
+        path_to_directory = f"assets\\enemies\\{type}"
         return SpriteSheet.load_sprite_images(path_to_directory)
 
     def load_collectable_images(type):
-        path_to_directory = f"pygame/assets/collectibles/{type}"
+        path_to_directory = f"assets\\collectibles\\{type}"
         return SpriteSheet.load_sprite_images(path_to_directory)
     
     def load_interactable_images(type):
-        path_to_directory = f"pygame/assets/items/{type}"
+        path_to_directory = f"assets\\items\\{type}"
         return SpriteSheet.load_sprite_images(path_to_directory)
     

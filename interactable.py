@@ -25,6 +25,8 @@ class Lever(Interactable):
 
     def load_sprites(self):
         images_dict = SpriteSheet.load_interactable_images("lever")
+        for key in images_dict:
+            images_dict[key] = pygame.transform.scale(images_dict[key], (72,72))
         return [images_dict[key] for key in sorted(images_dict.keys())]
     
     def on_interact(self, player, keys):
@@ -50,6 +52,8 @@ class Door(Interactable):
 
     def load_sprites(self):
         images_dict = SpriteSheet.load_interactable_images("door")
+        for key in images_dict:
+            images_dict[key] = pygame.transform.scale(images_dict[key], (96, 96))
         return [images_dict[key] for key in sorted(images_dict.keys())]
     
     def on_interact(self):
@@ -62,6 +66,6 @@ class Door(Interactable):
             self.image = self.sprite[1]
         else:
             self.image = self.sprite[0]
-
-        screen.blit(self.image, (self.pos.x - offset_x, self.pos.y - offset_y))
+        
+        screen.blit(self.image, (self.pos.x - offset_x, (self.pos.y-24) - offset_y))
         pygame.draw.rect(screen, (0,0,255), self.rect, 2) #debugging tool

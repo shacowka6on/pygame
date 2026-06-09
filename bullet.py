@@ -8,7 +8,7 @@ class Bullet:
         direction = pygame.Vector2(target_x - x, target_y - y).normalize()
         self.velocity = direction * BULLET_SPEED
 
-        self.original_image = pygame.image.load('pygame/assets/laserBullet.png').convert_alpha()
+        self.original_image = pygame.image.load('assets\\laserBullet.png').convert_alpha()
         self.original_image = pygame.transform.scale(self.original_image, (15, 20))
         
         direction_vector = pygame.math.Vector2(target_x - x, target_y - y)

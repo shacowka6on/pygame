@@ -15,13 +15,15 @@ class Player:
         self.is_grounded = True
         self.bullets = []
         self.rect = pygame.Rect(x,y,35,60)
-        
+
+        # self.shooting_pos = pygame.Rect(0,0, 10, 10)
+
         self.last_animation_update = 0
         self.last_attack = 0
         self.frame = 0
         self.action = 0  # 0 idle, 1 jump, 2 fall, 3 run
         
-        self.sprite_sheet_image = pygame.image.load('pygame/assets/blastalot-wings-alpha.png').convert_alpha()
+        self.sprite_sheet_image = pygame.image.load('assets\\blastalot-wings-alpha.png').convert_alpha()
         self.sprite_sheet = SpriteSheet(self.sprite_sheet_image)
         self.animation_list = self.load_animations()
     
@@ -77,7 +79,6 @@ class Player:
         self.rect.x = self.pos.x
         self.rect.y = self.pos.y
             
-    
     def jump(self):
         current_time = pygame.time.get_ticks()
 
@@ -109,11 +110,11 @@ class Player:
         self.health -= ENEMY_DAMAGE
         return self.health <= 0
 
-    def handle_shoot_input(self, target_x, target_y):
+    def handle_shoot_input(self, target_x, target_y, ox, oy):
         current_time = pygame.time.get_ticks()
         if current_time - self.last_attack >= SHOOT_COOLDOWN:
             #added a little offset to x and y because bullets spawn from the top of the player 
-            bullet = Bullet(self.pos.x + 15, self.pos.y + 30, target_x, target_y)
+            bullet = Bullet(self.rect.x - ox, self.rect.y - oy, target_x, target_y)
             self.bullets.append(bullet)
             self.last_attack = current_time
     
@@ -145,15 +146,14 @@ class Player:
             self.last_animation_update = current_time
     
     def draw(self, screen, offset_x=0, offset_y=0):
-        # for bullet in self.bullets:
-        #     bullet.draw(screen)
-        
-        frame_img = self.animation_list[self.action][self.frame]
-        if not self.facing_right:
-            frame_img = pygame.transform.flip(frame_img, True, False)
-        
-        frame_rect = frame_img.get_rect(center=(self.pos.x + 20, self.pos.y + 20))
-        screen.blit(frame_img, (frame_rect.x - offset_x, frame_rect.y - offset_y))
-        screen.blit(self.draw_player_health(), (10,0))
-
-        pygame.draw.rect(screen, (0,255,0), self.rect, 2) #debugging tool
+       frame_img = self.animation_list[self.action][self.frame]
+       if not self.facing_right:
+           frame_img = pygame.transform.flip(frame_img, True, False)
+       
+       frame_rect = frame_img.get_rect(center=(self.pos.x + 20, self.pos.y + 20))
+       screen.blit(frame_img, (frame_rect.x - offset_x, frame_rect.y - offset_y))
+       screen.blit(self.draw_player_health(), (10, 0))
+       
+       # Apply offset to debug rect
+       debug_rect = self.rect.move(0, 0)
+       pygame.draw.rect(screen, (0, 255, 0), debug_rect, 2)

@@ -21,6 +21,7 @@ class Game:
         self.player = Player(self.level.player.x, self.level.player.y)
         self.camera = Camera()
 
+
     def get_fps_text(self):
         fps = str(int(self.clock.get_fps()))
         fps_text = self.font.render(fps, False, ("green"))
@@ -56,7 +57,9 @@ class Game:
                 self.running = False
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
-                self.player.handle_shoot_input(mouse_x, mouse_y)
+                ox = self.camera.offset_x
+                oy = self.camera.offset_y
+                self.player.handle_shoot_input(mouse_x, mouse_y, ox, oy)
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_e:
                     self.interact_with_lever(self.player, pygame.key.get_pressed())
@@ -75,7 +78,6 @@ class Game:
             if enemy.state == "DEATH":
                 enemy.remove_enemy(self.level.enemies)
 
-        #get health
         for heart in self.level.hearts:
             heart.collect_heart(self.player, self.level.hearts)
         for overhealth in self.level.overhealths:
@@ -88,9 +90,9 @@ class Game:
     def draw(self):
         settings.screen.fill(settings.BACKGROUND_COLOR)
         settings.screen.blit(settings.BACKGROUND_IMG, (0,0))
+        self.camera.update(self.player)
         ox = self.camera.offset_x
         oy = self.camera.offset_y
-        self.camera.update(self.player)
 
         self.level.door.draw(settings.screen,ox,oy)
 

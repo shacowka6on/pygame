@@ -69,7 +69,7 @@ class Platform:
     def load_platform_images(self):
         tile_images = []
         for i in range (1,13):
-            img = pygame.image.load(f"pygame/assets/platform/tile{i}.png").convert_alpha()
+            img = pygame.image.load(f"assets\\platform\\tile{i}.png").convert_alpha()
             tile_images.append(img)
         return tile_images
     
@@ -99,5 +99,5 @@ class Platform:
             
     def draw(self,screen, offset_x=0, offset_y=0):
         screen.blit(self.platform_surface, (self.x - offset_x, self.y - offset_y))
-        pygame.draw.rect(screen, (255,0,0), self.rect, 2) #debugging tool
-        
+        debug_rect = self.rect.move(-offset_x, -offset_y)
+        pygame.draw.rect(screen, (255, 0, 0), debug_rect, 2)
